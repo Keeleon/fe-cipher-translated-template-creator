@@ -26,7 +26,7 @@ export default class CardDetailExtractor {
   }
 
   private getCardSet(cardSetData: CardSetExtractionData): Q.Promise<CardSet> {
-    const cards: Card[] = [];
+    const cardList: Card[] = [];
     const deferred = Q.defer<CardSet>();
     request(cardSetData.url, (error, response, body) => {
       if (error) {
@@ -35,9 +35,14 @@ export default class CardDetailExtractor {
       }
       const dom = new JSDOM(body);
       const rawCards = dom.window.document.querySelectorAll('.card-wrapper');
-      console.log(cardSetData.url);
+      console.log(`Extracting data for: ${cardSetData.name}`);
       rawCards.forEach((rawCard) => {
-        cards.push(this.getCard(rawCard));
+        cardList.push(this.getCard(rawCard));
+      });
+      deferred.resolve({
+        name: cardSetData.name,
+        type: cardSetData.type,
+        cards: cardList
       });
     });
     return deferred.promise;
