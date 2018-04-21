@@ -45,9 +45,6 @@ export default class CardDetailExtractor {
 
   private getCard(rawCard: Element): Card {
     const table = rawCard.querySelector('.wikitable').querySelectorAll('td');
-    table.forEach((td, i) => {
-      console.log(`${i}: ${td.innerHTML}`);
-    });
     return {
       name: rawCard.querySelector('.card-name').children[0].children[0].innerHTML,
       illustrator: table[INDEX.ILLUSTRATOR].innerHTML,
