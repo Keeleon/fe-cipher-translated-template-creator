@@ -3,10 +3,16 @@ export enum CardSetType {
   STARTER = 'starter'
 }
 
-export interface CardSet {
+export interface CardSetExtractionData {
   name: string;
   url: string;
   type: CardSetType;
+}
+
+export interface CardSet {
+  name: string;
+  type: CardSetType;
+  cards: Card[];
 }
 
 export interface Card {
