@@ -1,0 +1,6 @@
+node_modules/
+.sonarlint/
+dist/
+coverage/
+.nyc_output/
+reports/
