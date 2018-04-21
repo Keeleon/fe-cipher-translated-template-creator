@@ -1,15 +1,15 @@
 import * as request from 'request';
 import { JSDOM } from 'jsdom';
 import * as Q from 'q';
-import { CardSet, CardSetType } from '../Types';
+import { CardSetExtractionData, CardSetType } from '../Types';
 
 const WIKI_URL = 'http://fireemblem.wikia.com';
 const DECK_AND_BOOSTER_INDEX_URL = 'http://fireemblem.wikia.com/wiki/Fire_Emblem_0_(Cipher)';
 
 export default class DeckAndBoosterUrlParser {
-  public getUrls(): Q.Promise<CardSet[]> {
-    const cardSetLists: CardSet[] = [];
-    const deferred = Q.defer<CardSet[]>();
+  public getUrls(): Q.Promise<CardSetExtractionData[]> {
+    const cardSetLists: CardSetExtractionData[] = [];
+    const deferred = Q.defer<CardSetExtractionData[]>();
     request(DECK_AND_BOOSTER_INDEX_URL, (error, response, body) => {
       if (error) {
         deferred.reject(error);
