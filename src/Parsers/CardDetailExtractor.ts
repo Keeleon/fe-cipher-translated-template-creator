@@ -1,7 +1,7 @@
 import * as request from 'request';
 import { JSDOM } from 'jsdom';
 import * as Q from 'q';
-import { CardSet, CardSetExtractionData, CardSetType, Card } from '../Types';
+import { CardSet, CardSetExtractionData, CardSetType, Card, Affinity } from '../Types';
 
 const enum INDEX {
   ILLUSTRATOR = 0,
@@ -58,7 +58,7 @@ export default class CardDetailExtractor {
       promoteCost: parseInt(table[INDEX.PROMOTE_COST].innerHTML, 10),
       class: this.getClass(table),
       attack: parseInt(table[INDEX.ATTACK].innerHTML, 10),
-      affinities: [],
+      affinities: this.getAffinities(table),
       range: parseInt(table[INDEX.RANGE].innerHTML, 10),
       notes: table[INDEX.NOTES].innerHTML.replace('\n', ''),
       support: parseInt(table[INDEX.SUPPORT].innerHTML, 10),
@@ -66,6 +66,18 @@ export default class CardDetailExtractor {
       skills: [],
       supportSkills: [],
     };
+  }
+
+  private getAffinities(table: NodeListOf<HTMLTableDataCellElement>): Affinity[] {
+    const affinities: Affinity[] = [];
+    const html = table[INDEX.AFFINITIES];
+    html.querySelectorAll('img').forEach((affinity) => {
+      affinities.push({
+        name: affinity.getAttribute('alt').replace('Cipher ', ''),
+        imageUrl: affinity.getAttribute('data-src')
+      });
+    });
+    return affinities;
   }
 
   private getClass(table: NodeListOf<HTMLTableDataCellElement>): string {
