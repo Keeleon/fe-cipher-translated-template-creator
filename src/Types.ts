@@ -23,11 +23,16 @@ export interface Card {
   promoteCost: number;
   class: string;
   attack: number;
-  affinities: string[];
+  affinities: Affinity[];
   range: number;
   notes: string;
   support: number;
   quote: string;
   skills: string[];
   supportSkills: string[];
+}
+
+export interface Affinity {
+  name: string;
+  imageUrl: string;
 }
