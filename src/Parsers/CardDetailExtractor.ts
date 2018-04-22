@@ -1,7 +1,7 @@
 import * as request from 'request';
 import { JSDOM } from 'jsdom';
 import * as Q from 'q';
-import { CardSet, CardSetExtractionData, CardSetType, Card, Affinity } from '../Types';
+import { CardSet, CardSetExtractionData, CardSetType, Card, Affinity, Skill } from '../Types';
 
 const enum INDEX {
   ILLUSTRATOR = 0,
