@@ -51,20 +51,34 @@ export default class CardDetailExtractor {
   private getCard(rawCard: Element): Card {
     const table = rawCard.querySelector('.wikitable').querySelectorAll('td');
     return {
-      name: rawCard.querySelector('.card-name').children[0].children[0].innerHTML,
-      illustrator: table[INDEX.ILLUSTRATOR].innerHTML,
+      name: rawCard.querySelector('.card-name').children[0].children[0].innerHTML.replace('\n', ''),
+      illustrator: table[INDEX.ILLUSTRATOR].innerHTML.replace('\n', ''),
       deployCost: parseInt(table[INDEX.DEPLOY_COST].innerHTML, 10),
       cardNumber: rawCard.id,
       promoteCost: parseInt(table[INDEX.PROMOTE_COST].innerHTML, 10),
-      class: table[INDEX.CLASS].innerHTML,
+      class: this.getClass(table),
       attack: parseInt(table[INDEX.ATTACK].innerHTML, 10),
       affinities: [],
-      range: 0,
-      notes: table[INDEX.NOTES].innerHTML,
+      range: parseInt(table[INDEX.RANGE].innerHTML, 10),
+      notes: table[INDEX.NOTES].innerHTML.replace('\n', ''),
       support: parseInt(table[INDEX.SUPPORT].innerHTML, 10),
-      quote: table[INDEX.QUOTE].innerHTML,
-      skill: [],
-      supportSkill: [],
+      quote: this.getQuote(table),
+      skills: [],
+      supportSkills: [],
     };
+  }
+
+  private getClass(table: NodeListOf<HTMLTableDataCellElement>): string {
+    if (typeof table[INDEX.CLASS].children[0] === 'undefined') {
+      return table[INDEX.CLASS].innerHTML.replace('\n', '');
+    }
+    return table[INDEX.CLASS].children[0].innerHTML.replace('\n', '');
+  }
+
+  private getQuote(table: NodeListOf<HTMLTableDataCellElement>): string {
+    if (typeof table[INDEX.QUOTE].children[0] === 'undefined') {
+      return '';
+    }
+    return table[INDEX.QUOTE].children[0].innerHTML.replace('\n', '');
   }
 }
