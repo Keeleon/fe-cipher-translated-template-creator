@@ -28,6 +28,6 @@ export interface Card {
   notes: string;
   support: number;
   quote: string;
-  skill: string[];
-  supportSkill: string[];
+  skills: string[];
+  supportSkills: string[];
 }
