@@ -3,6 +3,11 @@ export enum CardSetType {
   STARTER = 'starter'
 }
 
+export enum SkillType {
+  SKILL = 'skill',
+  SUPPORT_SKILL = 'support_skill'
+}
+
 export interface CardSetExtractionData {
   name: string;
   url: string;
@@ -28,8 +33,8 @@ export interface Card {
   notes: string;
   support: number;
   quote: string;
-  skills: string[];
-  supportSkills: string[];
+  skills: Skill[];
+  supportSkills: Skill[];
 }
 
 export interface Affinity {
@@ -40,4 +45,5 @@ export interface Affinity {
 export interface Skill {
   name: string;
   text: string;
+  type: SkillType;
 }
