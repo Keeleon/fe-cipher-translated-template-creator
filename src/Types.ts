@@ -36,3 +36,8 @@ export interface Affinity {
   name: string;
   imageUrl: string;
 }
+
+export interface Skill {
+  name: string;
+  text: string;
+}
