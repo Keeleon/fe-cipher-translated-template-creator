@@ -1,6 +1,7 @@
 import * as request from 'request';
 import { JSDOM } from 'jsdom';
 import * as Q from 'q';
+import * as htmlToText from 'html-to-text';
 import { CardSet, CardSetExtractionData, CardSetType, Card, Affinity, Skill, SkillType } from '../Types';
 
 const enum INDEX {
@@ -15,6 +16,10 @@ const enum INDEX {
   SUPPORT = 9,
   QUOTE = 10
 }
+
+const SKILL_NAME_REGEX = /<b>(.*)<\/b>/g;
+const EXTRANEOUS_GIF_DATA_REGEX = /(\[data:image\/gif.*?\].*?)\[/g;
+const DUPLICATE_IMAGE_REGEX = /(\[.*?\]).(\1)/g;
 
 export default class CardDetailExtractor {
   public getCardSets(cardSetExtractionData: CardSetExtractionData[]): Q.Promise<CardSet[]> {
@@ -50,6 +55,8 @@ export default class CardDetailExtractor {
 
   private getCard(rawCard: Element): Card {
     const table = rawCard.querySelector('.wikitable').querySelectorAll('td');
+    const headers = rawCard.querySelector('.wikitable').querySelectorAll('th');
+    const skillGroups = this.getSkills(table, headers);
     return {
       name: rawCard.querySelector('.card-name').children[0].children[0].innerHTML.replace('\n', ''),
       illustrator: table[INDEX.ILLUSTRATOR].innerHTML.replace('\n', ''),
@@ -63,8 +70,8 @@ export default class CardDetailExtractor {
       notes: table[INDEX.NOTES].innerHTML.replace('\n', ''),
       support: parseInt(table[INDEX.SUPPORT].innerHTML, 10),
       quote: this.getQuote(table),
-      skills: [],
-      supportSkills: [],
+      skills: skillGroups.skills,
+      supportSkills: skillGroups.supportSkills,
     };
   }
 
@@ -92,5 +99,62 @@ export default class CardDetailExtractor {
       return '';
     }
     return table[INDEX.QUOTE].children[0].innerHTML.replace('\n', '');
+  }
+
+  private getSkills(
+    table: NodeListOf<HTMLTableDataCellElement>,
+    headers: NodeListOf<HTMLTableHeaderCellElement>
+  ): { skills: Skill[], supportSkills: Skill[] } {
+    const skills: Skill[] = [];
+    const supportSkills: Skill[] = [];
+    for (let i = INDEX.QUOTE + 1; i < headers.length; i += 1) {
+      if (table[i].innerHTML === '\n') {
+        continue;
+      }
+      if (headers[i].innerHTML.includes('Support')) {
+        supportSkills.push({
+          name: this.getSkillName(table[i]),
+          text: this.getSkillText(table[i]),
+          type: SkillType.SUPPORT_SKILL
+        });
+      } else {
+        skills.push({
+          name: this.getSkillName(table[i]),
+          text: this.getSkillText(table[i]),
+          type: SkillType.SKILL
+        });
+      }
+    }
+    return {
+      skills,
+      supportSkills
+    };
+  }
+
+  private getSkillName(cell: HTMLTableDataCellElement): string {
+    const nameHtml = new JSDOM(cell.innerHTML);
+    if (nameHtml.window.document.querySelector('body').children.length === 0) {
+      return nameHtml.window.document.querySelector('body').innerHTML;
+    }
+    return nameHtml.window.document.querySelector('body').children[0].innerHTML;
+  }
+
+  private getSkillText(cell: HTMLTableDataCellElement): string {
+    let text: string = cell.innerHTML.replace(SKILL_NAME_REGEX, '').trim();
+    text = htmlToText.fromString(text).replace(/\n/g, ' ');
+    let m;
+    while ((m = EXTRANEOUS_GIF_DATA_REGEX.exec(text)) !== null) {
+      if (m.index === EXTRANEOUS_GIF_DATA_REGEX.lastIndex) {
+        EXTRANEOUS_GIF_DATA_REGEX.lastIndex += 1;
+      }
+      text = text.replace(m[1], '');
+    }
+    while ((m = DUPLICATE_IMAGE_REGEX.exec(text)) !== null) {
+      if (m.index === DUPLICATE_IMAGE_REGEX.lastIndex) {
+        DUPLICATE_IMAGE_REGEX.lastIndex += 1;
+      }
+      text = text.replace(m[2], '');
+    }
+    return text;
   }
 }
