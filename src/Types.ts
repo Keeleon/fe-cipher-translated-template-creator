@@ -47,3 +47,18 @@ export interface Skill {
   text: string;
   type: SkillType;
 }
+
+export interface Coords {
+  ROW: number;
+  COL: number;
+}
+
+export interface WorksheetOffsets {
+  QUOTE: Coords;
+  SKILLS: Coords;
+  SUPPORT_SKILLS: Coords;
+  ATTACK: Coords;
+  RANGE: Coords;
+  CLASS: Coords;
+  SUPPORT: Coords;
+}
