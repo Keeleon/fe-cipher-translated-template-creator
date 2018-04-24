@@ -20,6 +20,8 @@ const enum INDEX {
 const SKILL_NAME_REGEX = /<b>(.*)<\/b>/g;
 const EXTRANEOUS_GIF_DATA_REGEX = /(\[data:image\/gif.*?\].*?)\[/g;
 const DUPLICATE_IMAGE_REGEX = /(\[.*?\]).(\1)/g;
+const CHARACTER_NAME_BACKUP_REGEX = /\w*$/g;
+const CHARACTER_TITLE_BACKUP_REGEX = /(.*)\s\w*$/g;
 
 export default class CardDetailExtractor {
   public getCardSets(cardSetExtractionData: CardSetExtractionData[]): Q.Promise<CardSet[]> {
@@ -58,7 +60,18 @@ export default class CardDetailExtractor {
     const headers = rawCard.querySelector('.wikitable').querySelectorAll('th');
     const skillGroups = this.getSkills(table, headers);
     const cardName = rawCard.querySelector('.card-name').children[0].children[0].innerHTML.replace('\n', '');
-    const names = cardName.split(',');
+    let names = cardName.split(',');
+    if (names.length === 1) {
+      names = cardName.split('.');
+    }
+    if (names.length === 1) {
+      const name = cardName.match(CHARACTER_NAME_BACKUP_REGEX)[0];
+      const title = cardName.replace(name, '');
+      names = [
+        title,
+        name
+      ];
+    }
     return {
       name: cardName,
       title: names[0].trim(),
