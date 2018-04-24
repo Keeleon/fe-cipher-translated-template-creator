@@ -57,8 +57,12 @@ export default class CardDetailExtractor {
     const table = rawCard.querySelector('.wikitable').querySelectorAll('td');
     const headers = rawCard.querySelector('.wikitable').querySelectorAll('th');
     const skillGroups = this.getSkills(table, headers);
+    const cardName = rawCard.querySelector('.card-name').children[0].children[0].innerHTML.replace('\n', '');
+    const names = cardName.split(',');
     return {
-      name: rawCard.querySelector('.card-name').children[0].children[0].innerHTML.replace('\n', ''),
+      name: cardName,
+      title: names[0].trim(),
+      characterName: names[1].trim(),
       illustrator: table[INDEX.ILLUSTRATOR].innerHTML.replace('\n', ''),
       deployCost: parseInt(table[INDEX.DEPLOY_COST].innerHTML, 10),
       cardNumber: rawCard.id,

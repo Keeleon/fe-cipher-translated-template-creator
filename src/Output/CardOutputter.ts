@@ -32,9 +32,14 @@ const RANGE_OFFSET: Coords = {
   COL: 1
 };
 
-const SOMETHING_OFFSET: Coords = {
-  ROW: 3,
+const TITLE_OFFSET: Coords = {
+  ROW: 7,
   COL: 1
+};
+
+const CHARACTER_NAME_OFFSET: Coords = {
+  ROW: 7,
+  COL: 3
 };
 
 const CLASS_OFFSET: Coords = {
@@ -58,6 +63,8 @@ export default class CardOutputter {
       ATTACK: ATTACK_OFFSET,
       RANGE: RANGE_OFFSET,
       CLASS: CLASS_OFFSET,
+      TITLE: TITLE_OFFSET,
+      CHARACTER_NAME: CHARACTER_NAME_OFFSET,
       SUPPORT: SUPPORT_OFFSET
     };
   }
@@ -127,6 +134,12 @@ export default class CardOutputter {
         break;
       case('CLASS'):
         cellData = card.class;
+        break;
+      case('TITLE'):
+        cellData = card.title;
+        break;
+      case('CHARACTER_NAME'):
+        cellData = card.characterName;
         break;
       case('SUPPORT'):
         cellData = card.support === null ? '' : card.support.toString();

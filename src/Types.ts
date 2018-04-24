@@ -22,6 +22,8 @@ export interface CardSet {
 
 export interface Card {
   name: string;
+  title: string;
+  characterName: string;
   illustrator: string;
   deployCost: number;
   cardNumber: string;
@@ -60,5 +62,7 @@ export interface WorksheetOffsets {
   ATTACK: Coords;
   RANGE: Coords;
   CLASS: Coords;
+  TITLE: Coords;
+  CHARACTER_NAME: Coords;
   SUPPORT: Coords;
 }
