@@ -5,7 +5,7 @@ import { CardSet, CardSetType, Card, Affinity, Skill, SkillType, Coords, Workshe
 const WORKBOOK_LOCATION = './src/FE_Cipher_Template_S.xlsx';
 
 const CARD_COL_OFFSET = 6;
-const CARD_ROW_OFFSET = 6;
+const CARD_ROW_OFFSET = 3;
 
 const QUOTE_OFFSET: Coords = {
   ROW: 2,
