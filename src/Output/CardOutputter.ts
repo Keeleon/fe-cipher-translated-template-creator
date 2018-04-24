@@ -6,6 +6,7 @@ const WORKBOOK_LOCATION = './src/FE_Cipher_Template_S.xlsx';
 
 const CARD_COL_OFFSET = 6;
 const CARD_ROW_OFFSET = 3;
+const MAX_SHEET_NAME_LENGTH = 31;
 
 const QUOTE_OFFSET: Coords = {
   ROW: 2,
@@ -73,7 +74,8 @@ export default class CardOutputter {
     const workbook = XLSX.readFile(WORKBOOK_LOCATION);
     cardSets.forEach((cardSet, i) => {
       const worksheet = this.getWorkSheetOutput(cardSet);
-      const sheetName = `${cardSet.type}${i}`;
+      const sheetName =
+        `${cardSet.type === CardSetType.BOOSTER ? 'B' : 'S'} ${cardSet.name}`.slice(0, MAX_SHEET_NAME_LENGTH);
       try {
         XLSX.utils.book_append_sheet(workbook, worksheet, sheetName);
       } catch (e) {
@@ -88,6 +90,11 @@ export default class CardOutputter {
     const workbook = XLSX.readFile(WORKBOOK_LOCATION);
     const templateSheet = workbook.SheetNames[0];
     const worksheet = workbook.Sheets[templateSheet];
+    const sheetNameCell: XLSX.CellObject = {
+      t: 's',
+      v: `${cardSet.type}: ${cardSet.name} [${cardSet.cards.length} cards]`
+    };
+    worksheet['A1'] = sheetNameCell;
     for (let i = 0; i < cardSet.cards.length; i += 1) {
       this.addCardToWorkSheet(worksheet, cardSet.cards[i], i);
     }
@@ -130,7 +137,7 @@ export default class CardOutputter {
         cellData = card.attack === null ? '' : card.attack.toString();
         break;
       case('RANGE'):
-        cellData = card.range === null ? '' : card.range.toString();
+        cellData = card.range === null ? 'RNG: ' : `RNG: ${card.range.toString()}`;
         break;
       case('CLASS'):
         cellData = card.class;
