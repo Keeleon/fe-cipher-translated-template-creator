@@ -120,16 +120,16 @@ export default class CardOutputter {
         cellData = this.getSkillText(card.supportSkills);
         break;
       case('ATTACK'):
-        cellData = card.attack.toString();
+        cellData = card.attack === null ? '' : card.attack.toString();
         break;
       case('RANGE'):
-        cellData = card.range.toString();
+        cellData = card.range === null ? '' : card.range.toString();
         break;
       case('CLASS'):
         cellData = card.class;
         break;
       case('SUPPORT'):
-        cellData = card.support.toString();
+        cellData = card.support === null ? '' : card.support.toString();
         break;
       default:
         cellData = '';
