@@ -22,6 +22,8 @@ const EXTRANEOUS_GIF_DATA_REGEX = /(\[data:image\/gif.*?\].*?)\[/g;
 const DUPLICATE_IMAGE_REGEX = /(\[.*?\]).(\1)/g;
 const CHARACTER_NAME_BACKUP_REGEX = /\w*$/g;
 const CHARACTER_TITLE_BACKUP_REGEX = /(.*)\s\w*$/g;
+const LEFT_QUOTE = '“';
+const RIGHT_QUOTE = '”';
 
 export default class CardDetailExtractor {
   public getCardSets(cardSetExtractionData: CardSetExtractionData[]): Q.Promise<CardSet[]> {
@@ -115,7 +117,11 @@ export default class CardDetailExtractor {
     if (typeof table[INDEX.QUOTE].children[0] === 'undefined') {
       return '';
     }
-    return table[INDEX.QUOTE].children[0].innerHTML.replace('\n', '');
+    return table[INDEX.QUOTE].children[0].innerHTML
+      .replace('\n', '')
+      .replace(LEFT_QUOTE, '')
+      .replace(RIGHT_QUOTE, '')
+      .trim();
   }
 
   private getSkills(
