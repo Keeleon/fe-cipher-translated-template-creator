@@ -22,6 +22,9 @@ const EXTRANEOUS_GIF_DATA_REGEX = /(\[data:image\/gif.*?\].*?)\[/g;
 const DUPLICATE_IMAGE_REGEX = /(\[.*?\]).(\1)/g;
 const CHARACTER_NAME_BACKUP_REGEX = /\w*$/g;
 const CHARACTER_TITLE_BACKUP_REGEX = /(.*)\s\w*$/g;
+const HREF_REGEX = /\[(?!\s).*?\]/g;
+const MULTI_SPACE_REGEX = /  +/g;
+const TAG_BACKUP_REGEX = /<.*?>/g;
 const LEFT_QUOTE = '“';
 const RIGHT_QUOTE = '”';
 
@@ -177,6 +180,22 @@ export default class CardDetailExtractor {
         DUPLICATE_IMAGE_REGEX.lastIndex += 1;
       }
       text = text.replace(m[2], '');
+    }
+    const matches = text.match(HREF_REGEX);
+    if (matches !== null) {
+      matches.forEach((m) => {
+        text = text.replace(m, '');
+      });
+    }
+    text = text.replace(MULTI_SPACE_REGEX, ' ');
+    if (text.includes('<img')) {
+      console.log('IMAGE!');
+    }
+    const tagMatches = text.match(TAG_BACKUP_REGEX);
+    if (tagMatches !== null) {
+      tagMatches.forEach((m) => {
+        text = text.replace(m, '');
+      });
     }
     return text;
   }
