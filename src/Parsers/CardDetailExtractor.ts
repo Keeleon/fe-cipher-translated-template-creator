@@ -23,8 +23,11 @@ const DUPLICATE_IMAGE_REGEX = /(\[.*?\]).(\1)/g;
 const CHARACTER_NAME_BACKUP_REGEX = /\w*$/g;
 const CHARACTER_TITLE_BACKUP_REGEX = /(.*)\s\w*$/g;
 const HREF_REGEX = /\[(?!\s).*?\]/g;
-const MULTI_SPACE_REGEX = /  +/g;
+const MULTI_SPACE_REGEX = /\s\s+/g;
 const TAG_BACKUP_REGEX = /<.*?>/g;
+const DUPLICATE_WORD_REGEX = /\b([A-Z0-9a-z0-9]+)\s+\1\b/;
+const DUPLICATE_DOUBLE_WORD_REGEX = /\b([A-Z0-9a-z0-9]+\s+[A-Z0-9a-z0-9]+)\s\1\b/;
+const DUPLICATE_TRIPLE_WORD_REGEX = /\b([A-Z0-9a-z0-9]+\s+[A-Z0-9a-z0-9]+\s[A-Z0-9a-z0-9]+)\s\1\b/;
 const LEFT_QUOTE = '“';
 const RIGHT_QUOTE = '”';
 
@@ -159,10 +162,44 @@ export default class CardDetailExtractor {
 
   private getSkillName(cell: HTMLTableDataCellElement): string {
     const nameHtml = new JSDOM(cell.innerHTML);
-    if (nameHtml.window.document.querySelector('body').children.length === 0) {
-      return nameHtml.window.document.querySelector('body').innerHTML;
+    let text = htmlToText.fromString(nameHtml.window.document.querySelector('body').innerHTML);
+    const matches = text.match(HREF_REGEX);
+    if (matches !== null) {
+      matches.forEach((m) => {
+        text = text.replace(m, '');
+      });
     }
-    return nameHtml.window.document.querySelector('body').children[0].innerHTML;
+    const tagMatches = text.match(TAG_BACKUP_REGEX);
+    if (tagMatches !== null) {
+      tagMatches.forEach((m) => {
+        text = text.replace(m, '');
+      });
+    }
+    text = text.replace(MULTI_SPACE_REGEX, ' ');
+    text = text.replace(/\n/g, ' ');
+    let m;
+    while ((m = DUPLICATE_WORD_REGEX.exec(text)) !== null) {
+      if (m.index === DUPLICATE_WORD_REGEX.lastIndex) {
+        DUPLICATE_WORD_REGEX.lastIndex += 1;
+      }
+      text = text.replace(m[0], '!!!!');
+      text = text.replace('!!!!', m[1]);
+    }
+    while ((m = DUPLICATE_DOUBLE_WORD_REGEX.exec(text)) !== null) {
+      if (m.index === DUPLICATE_DOUBLE_WORD_REGEX.lastIndex) {
+        DUPLICATE_DOUBLE_WORD_REGEX.lastIndex += 1;
+      }
+      text = text.replace(m[0], '!!!!');
+      text = text.replace('!!!!', m[1]);
+    }
+    while ((m = DUPLICATE_TRIPLE_WORD_REGEX.exec(text)) !== null) {
+      if (m.index === DUPLICATE_TRIPLE_WORD_REGEX.lastIndex) {
+        DUPLICATE_TRIPLE_WORD_REGEX.lastIndex += 1;
+      }
+      text = text.replace(m[0], '!!!!');
+      text = text.replace('!!!!', m[1]);
+    }
+    return text;
   }
 
   private getSkillText(cell: HTMLTableDataCellElement): string {
@@ -188,9 +225,6 @@ export default class CardDetailExtractor {
       });
     }
     text = text.replace(MULTI_SPACE_REGEX, ' ');
-    if (text.includes('<img')) {
-      console.log('IMAGE!');
-    }
     const tagMatches = text.match(TAG_BACKUP_REGEX);
     if (tagMatches !== null) {
       tagMatches.forEach((m) => {

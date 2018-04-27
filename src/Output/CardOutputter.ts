@@ -161,7 +161,7 @@ export default class CardOutputter {
   private getSkillText(skills: Skill[]): string {
     let skillText: string = '';
     skills.forEach((skill: Skill) => {
-      skillText += `${skill.name}: ${skill.text}\n`;
+      skillText += `${skill.name}\n`;
     });
     return skillText;
   }
