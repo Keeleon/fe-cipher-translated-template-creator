@@ -1,0 +1,9 @@
+node_modules/
+.sonarlint/
+dist/
+coverage/
+.nyc_output/
+reports/
+output\.xlsx
+
+cards\.json
