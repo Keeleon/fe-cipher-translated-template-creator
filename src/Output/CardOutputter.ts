@@ -33,6 +33,11 @@ const RANGE_OFFSET: Coords = {
   COL: 1
 };
 
+const CARD_TYPE_OFFSET: Coords = {
+  ROW: 6,
+  COL: 2
+};
+
 const TITLE_OFFSET: Coords = {
   ROW: 7,
   COL: 1
@@ -62,6 +67,7 @@ export default class CardOutputter {
       SKILLS: SKILLS_OFFSET,
       SUPPORT_SKILLS: SUPPORT_SKILLS_OFFSET,
       ATTACK: ATTACK_OFFSET,
+      CARD_TYPE: CARD_TYPE_OFFSET,
       RANGE: RANGE_OFFSET,
       CLASS: CLASS_OFFSET,
       TITLE: TITLE_OFFSET,
@@ -134,10 +140,13 @@ export default class CardOutputter {
         cellData = this.getSkillText(card.supportSkills);
         break;
       case('ATTACK'):
-        cellData = card.attack === null ? '' : card.attack.toString();
+        cellData = isNaN(card.attack) ? '' : card.attack.toString();
         break;
       case('RANGE'):
-        cellData = card.range === null ? 'RNG: ' : `RNG: ${card.range.toString()}`;
+        cellData = isNaN(card.range) ? ' -' : `RNG: ${card.range.toString()}`;
+        break;
+      case('CARD_TYPE'):
+        cellData = isNaN(card.promoteCost) ? 'Basic' : 'Promoted';
         break;
       case('CLASS'):
         cellData = card.class;
@@ -149,7 +158,7 @@ export default class CardOutputter {
         cellData = card.characterName;
         break;
       case('SUPPORT'):
-        cellData = card.support === null ? '' : card.support.toString();
+        cellData = isNaN(card.support) ? '' : card.support.toString();
         break;
       default:
         cellData = '';
