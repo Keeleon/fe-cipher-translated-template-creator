@@ -28,6 +28,7 @@ const TAG_BACKUP_REGEX = /<.*?>/g;
 const DUPLICATE_WORD_REGEX = /\b([A-Z0-9a-z0-9]+)\s+\1\b/;
 const DUPLICATE_DOUBLE_WORD_REGEX = /\b([A-Z0-9a-z0-9]+\s+[A-Z0-9a-z0-9]+)\s\1\b/;
 const DUPLICATE_TRIPLE_WORD_REGEX = /\b([A-Z0-9a-z0-9]+\s+[A-Z0-9a-z0-9]+\s[A-Z0-9a-z0-9]+)\s\1\b/;
+const TITLE_TRIMMER_RGEX = /^The /g;
 const LEFT_QUOTE = '“';
 const RIGHT_QUOTE = '”';
 
@@ -82,7 +83,7 @@ export default class CardDetailExtractor {
     }
     return {
       name: cardName,
-      title: names[0].trim(),
+      title: names[0].replace(TITLE_TRIMMER_RGEX, '').trim(),
       characterName: names[1].trim(),
       illustrator: table[INDEX.ILLUSTRATOR].innerHTML.replace('\n', ''),
       deployCost: parseInt(table[INDEX.DEPLOY_COST].innerHTML, 10),
