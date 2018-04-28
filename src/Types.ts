@@ -61,6 +61,7 @@ export interface WorksheetOffsets {
   SUPPORT_SKILLS: Coords;
   ATTACK: Coords;
   RANGE: Coords;
+  CARD_TYPE: Coords;
   CLASS: Coords;
   TITLE: Coords;
   CHARACTER_NAME: Coords;
