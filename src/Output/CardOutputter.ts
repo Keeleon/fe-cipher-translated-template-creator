@@ -58,10 +58,15 @@ const SUPPORT_OFFSET: Coords = {
   COL: 4
 };
 
+enum SKILL_CELL {
+  FIRST = 0,
+  SECOND = 1
+}
+
 export default class CardOutputter {
   private worksheetOffsets: WorksheetOffsets;
 
-  constructor () {
+  constructor() {
     this.worksheetOffsets = {
       QUOTE: QUOTE_OFFSET,
       SKILLS: SKILLS_OFFSET,
@@ -109,7 +114,7 @@ export default class CardOutputter {
 
   private addCardToWorkSheet(worksheet: XLSX.WorkSheet, card: Card, index: number): void {
     const cardColOffset = index % 2 === 0 ? 0 : CARD_COL_OFFSET;
-    const cardRowOffset = index % 2 === 0 ? CARD_ROW_OFFSET * index : CARD_ROW_OFFSET * (index - 1) ;
+    const cardRowOffset = index % 2 === 0 ? CARD_ROW_OFFSET * index : CARD_ROW_OFFSET * (index - 1);
     const offsets = Object.keys(this.worksheetOffsets);
     offsets.forEach((offset) => {
       const cellData = this.getCellData(offset, card);
@@ -130,34 +135,34 @@ export default class CardOutputter {
   private getCellData(offset: string, card: Card): string {
     let cellData: string;
     switch (offset) {
-      case('QUOTE'):
+      case ('QUOTE'):
         cellData = card.quote;
         break;
-      case('SKILLS'):
-        cellData = this.getSkillText(card.skills);
+      case ('SKILLS'):
+        cellData = this.getSkillText(card.skills.concat(card.supportSkills), SKILL_CELL.FIRST);
         break;
-      case('SUPPORT_SKILLS'):
-        cellData = this.getSkillText(card.supportSkills);
+      case ('SUPPORT_SKILLS'):
+        cellData = this.getSkillText(card.skills.concat(card.supportSkills), SKILL_CELL.SECOND);
         break;
-      case('ATTACK'):
+      case ('ATTACK'):
         cellData = isNaN(card.attack) ? '' : card.attack.toString();
         break;
-      case('RANGE'):
+      case ('RANGE'):
         cellData = isNaN(card.range) ? ' -' : `RNG: ${card.range.toString()}`;
         break;
-      case('CARD_TYPE'):
+      case ('CARD_TYPE'):
         cellData = isNaN(card.promoteCost) ? 'Basic' : 'Promoted';
         break;
-      case('CLASS'):
+      case ('CLASS'):
         cellData = card.class;
         break;
-      case('TITLE'):
+      case ('TITLE'):
         cellData = card.title;
         break;
-      case('CHARACTER_NAME'):
+      case ('CHARACTER_NAME'):
         cellData = card.characterName;
         break;
-      case('SUPPORT'):
+      case ('SUPPORT'):
         cellData = isNaN(card.support) ? '' : card.support.toString();
         break;
       default:
@@ -167,11 +172,17 @@ export default class CardOutputter {
     return cellData;
   }
 
-  private getSkillText(skills: Skill[]): string {
-    let skillText: string = '';
-    skills.forEach((skill: Skill) => {
-      skillText += `${skill.name}\n`;
-    });
+  private getSkillText(skills: Skill[], skillCell: SKILL_CELL): string {
+    if (skills.length === 0) {
+      return '';
+    }
+    if (skillCell === SKILL_CELL.FIRST) {
+      return `${skills[0].name}`;
+    }
+    let skillText = '';
+    for (let i = 1; i < skills.length; i++) {
+      skillText += `${skills[i].name}\n`;
+    }
     return skillText;
   }
 
