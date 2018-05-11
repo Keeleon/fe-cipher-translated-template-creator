@@ -31,6 +31,8 @@ const DUPLICATE_TRIPLE_WORD_REGEX = /\b([A-Z0-9a-z0-9]+\s+[A-Z0-9a-z0-9]+\s[A-Z0
 const TITLE_TRIMMER_RGEX = /^The /g;
 const LEFT_QUOTE = '“';
 const RIGHT_QUOTE = '”';
+const SUPPORT_SKILL_NAME_TRIMMER = /^Attack Support/g;
+const SUPPORT_SKILL_NAME_PREPEND = '(S)';
 
 export default class CardDetailExtractor {
   public getCardSets(cardSetExtractionData: CardSetExtractionData[]): Q.Promise<CardSet[]> {
@@ -200,6 +202,7 @@ export default class CardDetailExtractor {
       text = text.replace(m[0], '!!!!');
       text = text.replace('!!!!', m[1]);
     }
+    text = text.replace(SUPPORT_SKILL_NAME_TRIMMER, SUPPORT_SKILL_NAME_PREPEND);
     return text;
   }
 
